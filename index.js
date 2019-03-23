@@ -45,6 +45,10 @@ module.exports = function wdm(compiler, opts) {
 
   const context = createContext(compiler, options);
 
+  // if lazy, just pass compiler
+  //   context.rebuild will call compiler.run on request
+  // otherwise (default), we just run in webpack watch mode
+
   // start watching
   if (!options.lazy) {
     const watching = compiler.watch(options.watchOptions, (err) => {
@@ -67,6 +71,8 @@ module.exports = function wdm(compiler, opts) {
 
   setFs(context, compiler);
 
+  // creates a middleware (req, res, next) by calling `middleware(context)`
+  // add functions/lib to the returned (middleware) function
   return Object.assign(middleware(context), {
     close(callback) {
       callback = callback || noop;
